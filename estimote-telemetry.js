@@ -281,6 +281,11 @@ noble.on('discover', function(peripheral) {
       console.log('new ID detected!!');
       lastID = telemetryPacket.shortIdentifier;
       console.log(telemetryPacket);
+      const request = require('request');
+      const endpointURI = 'https://prod-18.westus.logic.azure.com:443/workflows/d992d18dbb2f4be7b6969c011be980eb/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=B0F-fb1NGvtk1XAU-1b6mf7HYk8m1foAHCEMMexGHHg';
+
+
+      request.post(endpointURI).form(telemetryPacket);
     }
      }
 });
