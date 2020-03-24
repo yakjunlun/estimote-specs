@@ -1,3 +1,5 @@
+var lastID = '';
+
 // Packest from the Estimote family (Telemetry, Connectivity, etc.) are
 // broadcast as Service Data (per "§ 1.11. The Service Data - 16 bit UUID" from
 // the BLE spec), with the Service UUID 'fe9a'.
@@ -20,6 +22,8 @@ function parseEstimoteTelemetryPacket(data) { // data is a 0-indexed byte array/
 
   // bytes 1, 2, 3, 4, 5, 6, 7, 8 => first half of the identifier of the beacon
   var shortIdentifier = data.toString('hex', 1, 9);
+
+
 
   // byte 9, lower 2 bits => Telemetry subframe type
   // to fit all the telemetry data, we currently use two packets, "A" (i.e., "0")
@@ -272,5 +276,11 @@ noble.on('discover', function(peripheral) {
   var data = serviceData.data;
 
   var telemetryPacket = parseEstimoteTelemetryPacket(data);
-  if (telemetryPacket) { console.log(telemetryPacket); }
+  if (telemetryPacket) { 
+    if (shortIdentifier !== lastID){
+      console.log('new ID detected!!');
+      lastID = shortIdentifier;
+      console.log(telemetryPacket);
+    }
+     }
 });
