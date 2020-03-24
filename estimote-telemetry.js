@@ -277,9 +277,9 @@ noble.on('discover', function(peripheral) {
 
   var telemetryPacket = parseEstimoteTelemetryPacket(data);
   if (telemetryPacket) { 
-    if (shortIdentifier !== lastID){
+    if (telemetryPacket.shortIdentifier !== lastID){
       console.log('new ID detected!!');
-      lastID = shortIdentifier;
+      lastID = telemetryPacket.shortIdentifier;
       console.log(telemetryPacket);
     }
      }
