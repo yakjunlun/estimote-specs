@@ -70,7 +70,7 @@ function parseEstimoteTelemetryPacket(data) { // data is a 0-indexed byte array/
     //     - 0b10 ("2") => hours
     //     - 0b11 ("3") => days if NUMBER is <= 32
     //                     if it's > 32, then it's "NUMBER - 32" weeks
-    var parseMotionStateDuration = function(byte) {
+    var parseMotionStateDuration = function (byte) {
       var number = byte & 0b00111111;
       var unitCode = (byte & 0b11000000) >> 6;
       var unit;
@@ -86,7 +86,7 @@ function parseEstimoteTelemetryPacket(data) { // data is a 0-indexed byte array/
         unit = 'weeks';
         number = number - 32;
       }
-      return {number: number, unit: unit};
+      return { number: number, unit: unit };
     }
     var motionStateDuration = {
       previous: parseMotionStateDuration(data.readUInt8(13)),
@@ -149,9 +149,9 @@ function parseEstimoteTelemetryPacket(data) { // data is a 0-indexed byte array/
       acceleration, isMoving, motionStateDuration, pressure, gpio, errors
     };
 
-  // ****************
-  // * SUBFRAME "B" *
-  // ****************
+    // ****************
+    // * SUBFRAME "B" *
+    // ****************
   } else if (subFrameType == ESTIMOTE_TELEMETRY_SUBFRAME_B) {
 
     // ***** MAGNETIC FIELD
@@ -200,8 +200,8 @@ function parseEstimoteTelemetryPacket(data) { // data is a 0-indexed byte array/
     // RAW_VALUE / 16.0 = ambient temperature in degrees Celsius
     var temperatureRawValue =
       ((data.readUInt8(17) & 0b00000011) << 10) |
-       (data.readUInt8(16)               <<  2) |
-      ((data.readUInt8(15) & 0b11000000) >>  6);
+      (data.readUInt8(16) << 2) |
+      ((data.readUInt8(15) & 0b11000000) >> 6);
     if (temperatureRawValue > 2047) {
       // a simple way to convert a 12-bit unsigned integer to a signed one (:
       temperatureRawValue = temperatureRawValue - 4096;
@@ -213,7 +213,7 @@ function parseEstimoteTelemetryPacket(data) { // data is a 0-indexed byte array/
     //                                      (unsigned 14-bit integer)
     // if all bits are set to 1, it means it hasn't been measured yet
     var batteryVoltage =
-       (data.readUInt8(18)               << 6) |
+      (data.readUInt8(18) << 6) |
       ((data.readUInt8(17) & 0b11111100) >> 2);
     if (batteryVoltage == 0b11111111111111) { batteryVoltage = undefined; }
 
@@ -253,12 +253,12 @@ function parseEstimoteTelemetryPacket(data) { // data is a 0-indexed byte array/
 
 var noble = process.platform === 'darwin' ? require('noble-mac') : require('noble');
 
-noble.on('stateChange', function(state) {
+noble.on('stateChange', function (state) {
   console.log('state has changed', state);
   if (state == 'poweredOn') {
     var serviceUUIDs = [ESTIMOTE_SERVICE_UUID]; // Estimote Service
     var allowDuplicates = true;
-    noble.startScanning(serviceUUIDs, allowDuplicates, function(error) {
+    noble.startScanning(serviceUUIDs, allowDuplicates, function (error) {
       if (error) {
         console.log('error starting scanning', error);
       } else {
@@ -268,19 +268,27 @@ noble.on('stateChange', function(state) {
   }
 });
 
-noble.on('discover', function(peripheral) {
-  var serviceData = peripheral.advertisement.serviceData.find(function(el) {
+noble.on('discover', function (peripheral) {
+  var serviceData = peripheral.advertisement.serviceData.find(function (el) {
     return el.uuid == ESTIMOTE_SERVICE_UUID;
   });
   if (serviceData === undefined) { return; }
   var data = serviceData.data;
 
   var telemetryPacket = parseEstimoteTelemetryPacket(data);
-  if (telemetryPacket) { 
-    if(lastID.includes(telemetryPacket.shortIdentifier)){
+  if (telemetryPacket) {
+    if (lastID.includes(telemetryPacket.shortIdentifier)) {
       console.log("FOUND DUPLICATE BEACON")
     } else {
       console.log('new ID detected!!');
+      if (telemetryPacket.shortIdentifier === "0aa62e14ae7d2c60") {
+
+        console.log("WHITE DETECTED")
+      } else if (telemetryPacket.shortIdentifier === "04b4257787975535") {
+        console.log("YELLOW DETECTED")
+      } else {
+        console.log("UNKOWN COLOR DETECTED")
+      }
       lastID.push(telemetryPacket.shortIdentifier);
       console.log(lastID);
 
@@ -305,5 +313,5 @@ noble.on('discover', function(peripheral) {
 
     //   request.post(endpointURI).form(telemetryPacket);
     // }
-     }
+  }
 });
