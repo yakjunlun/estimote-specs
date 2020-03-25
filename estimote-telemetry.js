@@ -1,4 +1,4 @@
-var lastID = '';
+var lastID = [];
 
 // Packest from the Estimote family (Telemetry, Connectivity, etc.) are
 // broadcast as Service Data (per "§ 1.11. The Service Data - 16 bit UUID" from
@@ -277,6 +277,24 @@ noble.on('discover', function(peripheral) {
 
   var telemetryPacket = parseEstimoteTelemetryPacket(data);
   if (telemetryPacket) { 
+    if(lastID.includes(telemetryPacket.shortIdentifier)){
+      console.log("FOUND DUPLICATE BEACON")
+    } else {
+      console.log('new ID detected!!');
+      lastID.push(telemetryPacket.shortIdentifier);
+      console.log(lastID);
+
+      // const request = require('request');
+      // const endpointURI = 'https://prod-18.westus.logic.azure.com:443/workflows/d992d18dbb2f4be7b6969c011be980eb/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=B0F-fb1NGvtk1XAU-1b6mf7HYk8m1foAHCEMMexGHHg';
+
+
+      // request.post(endpointURI).form(telemetryPacket);
+
+    }
+
+
+
+
     if (telemetryPacket.shortIdentifier !== lastID){
       console.log('new ID detected!!');
       lastID = telemetryPacket.shortIdentifier;
