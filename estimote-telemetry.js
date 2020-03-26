@@ -284,19 +284,24 @@ noble.on('discover', function (peripheral) {
       if (telemetryPacket.shortIdentifier === "0aa62e14ae7d2c60") {
 
         console.log("WHITE DETECTED")
+
+        const request = require('request');
+        const endpointURI = 'https://prod-83.westus.logic.azure.com/workflows/ba39062c273d4f8b900d3c2d2f4bfcbf/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=JcUn-XJHrhCvYP-IdLM8jxsszIoXLaTSnr1GETX5AU0';
+        request.get(endpointURI);
+
       } else if (telemetryPacket.shortIdentifier === "04b4257787975535") {
         console.log("YELLOW DETECTED")
+        
+        const request = require('request');
+        const endpointURI = 'https://prod-24.westus.logic.azure.com:443/workflows/8bf9f3ef26c84533a3680f1563154e17/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=7sCMXBr_blTNe52-bS4MxM1KHdqdDev-7OZrruRT2BU';
+        request.get(endpointURI);
       } else {
         console.log("UNKOWN COLOR DETECTED")
       }
       lastID.push(telemetryPacket.shortIdentifier);
       console.log(lastID);
 
-      // const request = require('request');
-      // const endpointURI = 'https://prod-18.westus.logic.azure.com:443/workflows/d992d18dbb2f4be7b6969c011be980eb/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=B0F-fb1NGvtk1XAU-1b6mf7HYk8m1foAHCEMMexGHHg';
 
-
-      // request.post(endpointURI).form(telemetryPacket);
 
     }
 
